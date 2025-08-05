@@ -1,0 +1,64 @@
+services:
+
+  # Minio Storage Server
+  minio:
+    container_name: minio-scraper
+    image: minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+      MINIO_DOMAIN: storage
+      MINIO_REGION_NAME: eu-central-1
+      MINIO_REGION: eu-central-1
+      # https://docs.min.io/enterprise/aistor-object-store/reference/aistor-server/settings/notifications/webhook-service/
+      MINIO_NOTIFY_WEBHOOK_ENABLE_escobar: "on"
+      MINIO_NOTIFY_WEBHOOK_ENDPOINT_escobar: "http://python-service:5000/api/v0/webhook"
+      MINIO_NOTIFY_WEBHOOK_ENABLE_intake: "on"
+      MINIO_NOTIFY_WEBHOOK_ENDPOINT_intake: "http://python-service:5000/api/v0/intake"
+    volumes:
+      - ./minio/persistence:/data
+    ports:
+      # API port
+      - "8090:9000" # Api
+      # MinIO UI, browse to http://localhost:8091 to view the MinIO Object Browser
+      - "5091:9001"
+    command: [ "server", "/data", "--console-address", ":9001" ]
+    networks:
+      - app-network
+
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8090/minio/health/live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  python-service:
+    container_name: python-service
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    environment:
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=admin
+      - MINIO_SECRET_KEY=password
+      - MINIO_BUCKET=scraper
+      - MINIO_REGION=eu-central-1
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/app/app
+      - ./scripts:/app/scripts
+      - ./logs:/app/logs
+    networks:
+      - app-network
+
+    depends_on:
+      - minio
+
+networks:
+  app-network:
+    driver: bridge
+
+#volumes:
+#  minio_data:
