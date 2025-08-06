@@ -1,5 +1,6 @@
 # Minio docker example
 Just a poc how works webhooks on Minio
+
 ## Installation
 
 ```
@@ -13,6 +14,17 @@ docker compose up
 ```
 
 Wait a seconds/minutes to pull/build/run container and check if minio is ready on http://localhost:5091 and execute script available in poc-minio/minio/setup/configure-minio.sh
+
+If there are no problems, you should now be able to access the minio page at the url http://localhost:5091 (see docker-compose.yaml for credentials)
+Once inside MinIO you will see two buckets, one called intake and another called accounting. 
+
+Upload the Excel file that you will find in minio/setup/example/accounting_escobar.xlsx inside the accounting/escobar bucket and the file will be processed thanks to the event (webhook) that MinIO transmits to python-service.
+
+You can also upload any file to the intake bucket and you will see the event that is generated.
+
+Go out, play and enjoy.
+
+"My only merit is loving what I do" J.G.
 
 ## User with access limited to a specific bucket
 
