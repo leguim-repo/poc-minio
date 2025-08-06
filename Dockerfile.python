@@ -12,7 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 WORKDIR /app
 
 COPY . .
-COPY scripts/ ./scripts/
 
 RUN mkdir -p /app/logs && chmod 777 /app/logs
 

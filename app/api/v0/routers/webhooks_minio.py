@@ -30,7 +30,7 @@ async def handle_webhook(data: WebhookRequest):
                 try:
                     subprocess.run([
                         'python',
-                        '/app/scripts/process_file.py',
+                        '/app/app/scripts/process_file.py',
                         bucket_name,
                         object_name
                     ], check=True)

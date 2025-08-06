@@ -48,7 +48,6 @@ services:
       - "5000:5000"
     volumes:
       - ./app:/app/app
-      - ./scripts:/app/scripts
       - ./logs:/app/logs
     networks:
       - app-network
